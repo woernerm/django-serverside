@@ -4,8 +4,6 @@ from typing import Union
 from jinja2 import Environment, FileSystemLoader
 from psycopg2 import sql
 
-from serverside.backends.base import BaseFunction
-
 
 class FunctionMixin:
     def create_function(self, name: str, filename: Union[Path, str], **kwargs):
@@ -18,7 +16,7 @@ class FunctionMixin:
             Exception: If the operation fails.
         """
         file = Path(filename) if type(filename) is str else filename
-        env = Environment(loader=FileSystemLoader(str(file.parent)), autoescape=False)
+        env = Environment(loader=FileSystemLoader(str(file.parent)), autoescape=True)
         code = env.get_template(str(file.name)).render(**kwargs)
 
         query = sql.SQL("DROP FUNCTION IF EXISTS {name};\n").format(

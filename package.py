@@ -57,7 +57,7 @@ class Settings:
     BASE_DIR = Path(__file__).parents[0]
 
     # Directory where the package source code can be found.
-    SRC_DIR = BASE_DIR / "src"
+    SRC_DIR = BASE_DIR / "serverside"
 
     # Directory for placing all reports.
     REPORT_DIR = BASE_DIR / "report"
@@ -1813,8 +1813,7 @@ class Test:
                     "run",
                     "-m",
                     f"--source={srcdir}",
-                    "unittest",
-                    "-q",
+                    "runtests"
                 ]
             )
         )
@@ -1847,7 +1846,7 @@ class Test:
                 nstatements = content[self.KEY_SUMMARY][self.KEY_NUM_STATEMENTS]
                 nmissing = content[self.KEY_SUMMARY][self.KEY_NUM_MISSING]
                 nexcluded = content[self.KEY_SUMMARY][self.KEY_NUM_EXCLUDED]
-                coverage = str(content[self.KEY_SUMMARY][self.KEY_COVERAGE]) + "\u202F%"
+                coverage = str(round(content[self.KEY_SUMMARY][self.KEY_COVERAGE], 2)) + "\u202F%"
                 table.add(
                     f"<a href=\"{file.outputpath}\">{filename}</a>",
                     nstatements,

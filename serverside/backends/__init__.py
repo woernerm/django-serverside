@@ -85,13 +85,13 @@ class DBUser:
         """
         Delete the user in the database.
         """
-        return self._backend.delete_user(self._username)
+        self._backend.delete_user(self._username)
 
     def exists(self) -> bool:
         """
         Returns True, if the user already exists. False, otherwise.
         """
-        return self._backend.user_exists(self._username)
+        return bool(self._backend.user_exists(self._username))
 
     def change_password(self, password: str) -> None:
         """
@@ -134,7 +134,7 @@ class DBUser:
         Raises:
             Exception: If the operation fails.
         """
-        return self._backend.grant(self._username, privilege, type_name, objects)
+        self._backend.grant(self._username, privilege, type_name, objects)
 
     def revoke(self, privilege: str, type_name: str, objects: Union[List, str]) -> None:
         """
@@ -149,4 +149,4 @@ class DBUser:
         Raises:
             Exception: If the operation fails.
         """
-        return self._backend.revoke(self._username, privilege, type_name, objects)
+        self._backend.revoke(self._username, privilege, type_name, objects)

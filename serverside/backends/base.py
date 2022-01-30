@@ -127,7 +127,7 @@ class BaseFunction:
         self._name = name
 
         file = Path(filename) if type(filename) is str else filename
-        env = Environment(loader=FileSystemLoader(str(file.parent)), autoescape=False)
+        env = Environment(loader=FileSystemLoader(str(file.parent)), autoescape=True)
         self._code = env.get_template(str(file.name)).render(**kwargs)
 
     def create(self):

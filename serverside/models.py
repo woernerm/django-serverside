@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as DjangoUserManager
