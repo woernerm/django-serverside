@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class ServersideConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "serverside"
+    verbose_name = "ServerSide"
