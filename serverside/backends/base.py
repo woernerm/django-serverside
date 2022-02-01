@@ -1,60 +1,65 @@
+"""
+This module contains a common interface definition for all backends.
+"""
+
+from abc import ABC, abstractmethod
+from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Union
-from uuid import uuid4
-
-from jinja2 import Environment, FileSystemLoader
 
 
-class BaseUser:
+class BackendBase(ABC):
     """
-    Allows to manage a user in a relational database.
+    Base class for a database backend. It defines a common interface for all backends.
     """
 
-    def __init__(self, cursor, name: Optional[str] = None) -> None:
-        """
-        Initializes the user. If no name is given, a random name will be chosen.
+    @abstractmethod
+    def __init__(self, cursor) -> None:
+        pass
 
-        The random name has the format tmp_user_ followed by a random identifier.
-
-        Args:
-            cursor: The database cursor according to PEP 249.
-            name: The name of the user.
-        """
-        if name is not None and type(name) is not str:
-            raise TypeError("Expected parameter name to be of type str.")
-
-        print("Base initialized with ", name)
-        self._cursor = cursor
-        self._username = f"tmp_user_{uuid4()}" if not name else name
-
-    @property
-    def username(self):
-        return self._username
-
-    def create(self, password: Optional[str] = None) -> None:
+    @abstractmethod
+    def create_user(
+        self,
+        username: str,
+        password: Optional[str] = None,
+        expires: Optional[datetime] = None,
+        conn_limit: Optional[int] = None,
+    ) -> None:
         """
         Create the user in the database, if it does not exist already.
 
         Args:
             password: The password the user shall have.
+            expires: The date and time when the user's password shall expire. If the
+                password shall never expire, use None (default).
+            conn_limit: The number of concurrent connections of the user. If there shall
+                be no limit, use None (default).
 
         Raises:
             Exception: If the user already exists.
         """
         pass
 
-    def delete(self) -> None:
+    @abstractmethod
+    def delete_user(self, username: str) -> None:
         """
         Delete the user in the database.
         """
         pass
 
-    def exists(self) -> bool:
+    @abstractmethod
+    def user_exists(self, username: str) -> bool:
         """
         Returns True, if the user already exists. False, otherwise.
         """
+        pass
 
-    def change_password(self, password: str) -> None:
+    @abstractmethod
+    def rename_user(self, oldname: str, newname: str) -> None:
+        pass
+
+    @abstractmethod
+    def change_password(self, username: str, password: str) -> None:
         """
         Change the password of the user.
 
@@ -66,21 +71,12 @@ class BaseUser:
         """
         pass
 
-    def rename(self, username: str) -> None:
+    @abstractmethod
+    def grant(
+        self, username: str, privilege: str, type_name: str, objects: Union[List, str]
+    ) -> None:
         """
-        Change the name of the user
-
-        Args:
-            username: The new name of the user.
-
-        Raises:
-            Exception: If the operation fails.
-        """
-        pass
-
-    def grant(self, privilege: str, type_name: str, objects: Union[List, str]) -> None:
-        """
-        Grants select privileges on the given tables.
+        Grants privileges on the given objects.
 
         Args:
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
@@ -91,8 +87,12 @@ class BaseUser:
         Raises:
             Exception: If the operation fails.
         """
+        pass
 
-    def revoke(self, privilege: str, type_name: str, objects: Union[List, str]) -> None:
+    @abstractmethod
+    def revoke(
+        self, username: str, privilege: str, type_name: str, objects: Union[List, str]
+    ) -> None:
         """
         Revokes privileges on the given objects.
 
@@ -105,90 +105,30 @@ class BaseUser:
         Raises:
             Exception: If the operation fails.
         """
+        pass
 
-
-class BaseFunction:
-    """
-    Represents a function in the SQL database (if supported).
-    """
-
-    def __init__(self, cursor, name: str, filename: Union[Path, str], **kwargs) -> None:
-        """
-        Initializes the function.
-
-        Args:
-            cursor: The database cursor according to PEP 249.
-            name: The name of the function.
-            filename: The name of the file containing the function template.
-            args: Positional arguments for passing on to the template engine.
-            kwargs: Keyworded arguments to pass on to the template engine.
-        """
-        self._cursor = cursor
-        self._name = name
-
-        file = Path(filename) if type(filename) is str else filename
-        env = Environment(loader=FileSystemLoader(str(file.parent)), autoescape=True)
-        self._code = env.get_template(str(file.name)).render(**kwargs)
-
-    def create(self):
+    @abstractmethod
+    def create_function(self, name: str, filename: Union[Path, str], **kwargs):
         """
         Creates the function in the database.
 
-        Raises:
-            Exception: If the operation fails.
-        """
-        pass
-
-    def exists(self) -> bool:
-        """
-        Returns True, if the function already exists. False, otherwise.
-        """
-
-    def delete(self):
-        """
-        Deletes the function in the database.
+        If the function already exists, then it will be replaced.
 
         Raises:
             Exception: If the operation fails.
         """
         pass
 
-
-class BaseView:
-    """
-    Represents a view in the database (if supported).
-    """
-
-    def __init__(self, cursor, name) -> None:
+    @abstractmethod
+    def delete_function(self, name: str):
         """
-        Initializes the view.
-
-        Args:
-            cursor: The database cursor according to PEP 249.
-            name: The name of the view.
-        """
-        self._cursor = cursor
-        self.name = name
-
-    def create(self):
-        """
-        Create the view in the database, if it does not exist already.
-
-        Raises:
-            Exception: If the operation fails.
+        Delete the function in the database.
         """
         pass
 
-    def exists(self) -> bool:
+    @abstractmethod
+    def function_exists(self, name: str) -> bool:
         """
-        Returns True, if the view already exists. False, otherwise.
-        """
-
-    def delete(self):
-        """
-        Delete the view in the database.
-
-        Raises:
-            Exception: If the operation fails.
+        Returns True, if the user already exists. False, otherwise.
         """
         pass

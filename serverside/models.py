@@ -1,11 +1,12 @@
 from typing import Optional
+from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import connection, connections
 from django.db.models import QuerySet
 
-from serverside.backends import DBUser, get_backend
+from serverside.backends import get_backend
 
 
 class UserQuerySet(QuerySet):
@@ -38,32 +39,59 @@ class User(AbstractUser):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._dbuser = DBUser(self._state.db or self.DEFAULT_DATABASE, self.username)
+        self._backend = get_backend(self._state.db or self.DEFAULT_DATABASE)
+        self._dbusername = f"tmp_{uuid4()}" if not self.username else self.username
 
-    def has_table(self):
+    def __user_table_exists(self):
         db = self._state.db
         cursor = connections[db].cursor() if db else connection.cursor()
         return self._meta.db_table in connection.introspection.get_table_list(cursor)
+
+    def __set_backend(self, dbname: Optional[str] = None):
+        backend = get_backend(dbname or self.DEFAULT_DATABASE)
+
+        if self._backend is None or not self._backend:
+            self._backend = backend
+            return
+
+        if type(self._backend) is type(backend):
+            return
+
+        if self._backend.user_exists(self._username):
+            raise Exception("Cannot switch backend after creating a temporary user.")
+
+        self._backend = backend
 
     def __del__(self):
         # Remove users from the database that may have been only temporary.
         # This is not relevant, if the User model does not yet have a table (i.e. if
         # the code was run in the context of makemigrations).
-        if self.has_table() and not User.objects.filter(pk=self.pk).exists():
-            self._dbuser.delete()
+        if self.__user_table_exists() and not User.objects.filter(pk=self.pk).exists():
+            self._backend.delete_user(self._dbusername)
 
     def set_password(self, raw_password):
         super().set_password(raw_password)
 
-        self._dbuser.change_password(raw_password)
+        if not self._backend.user_exists(self._dbusername):
+            self._backend.create_user(self._dbusername, raw_password)
+        else:
+            self._backend.change_password(self._dbusername, raw_password)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        self._dbuser.username = self.username
-        self._dbuser.save(kwargs.get("using", None) or self._state.db)
+        # Rename existing user, if necessary.
+        if self._dbusername != self.username and self._backend.user_exists(
+            self._dbusername
+        ):
+            self._backend.rename_user(self._dbusername, self.username)
+        self._dbusername = self.username
+
+        self.__set_backend(kwargs.get("using", None) or self._state.db)
+        if not self._backend.user_exists(self._dbusername):
+            self._backend.create_user(self._dbusername)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
-        self._dbuser.delete()
+        self._backend.delete_user(self._dbusername)
