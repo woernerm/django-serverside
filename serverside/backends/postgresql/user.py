@@ -57,7 +57,8 @@ class UserMixin:
         Create the user in the database, if it does not exist already.
 
         Args:
-            password: The password the user shall have.
+            password: The password the user shall have. If None is given, login will
+                always fail for PostgreSQL 8.2 or later.
             expires: The date and time when the user's password shall expire. If the
                 password shall never expire, use None (default).
             conn_limit: The number of concurrent connections of the user. If there shall

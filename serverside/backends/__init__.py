@@ -1,3 +1,5 @@
+from importlib import import_module
+from inspect import getmembers, isclass
 from typing import Optional
 
 from django.conf import settings
@@ -11,8 +13,9 @@ def get_backend(using: Optional[str] = None) -> Optional[BackendBase]:
         return None
 
     name = settings.DATABASES[using]["ENGINE"].split(".")[-1]
+    module = import_module(f"serverside.backends.{name}")
 
-    for cls in BackendBase.__subclasses__():
+    for _, cls in getmembers(module, isclass):
         if cls.__name__.lower() == name.lower():
             return cls(connections[using].cursor())  # type: ignore
     return None

@@ -171,6 +171,11 @@
        serverside.migrations.0001_initial
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="serverside.migrations.0002_alter_user_has_dbuser.html">
+       serverside.migrations.0002_alter_user_has_dbuser
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2">
@@ -257,7 +262,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>password</strong> – The password the user shall have.</p></li>
+<li><p><strong>password</strong> – The password the user shall have. If None is given, login will
+always fail for PostgreSQL 8.2 or later.</p></li>
 <li><p><strong>expires</strong> – The date and time when the user’s password shall expire. If the
 password shall never expire, use None (default).</p></li>
 <li><p><strong>conn_limit</strong> – The number of concurrent connections of the user. If there shall

@@ -13,7 +13,7 @@ class TestSave(TestCase):
         name = "John Doe"
         password = "12345"
 
-        User.objects.create(username=name, password=password)
+        User.objects.create(username=name, password=password, has_dbuser=True)
 
         # Is there a new user in the database?
         query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
@@ -29,7 +29,7 @@ class TestSave(TestCase):
         newname = "Max Mustermann"
         password = "12345"
 
-        user = User.objects.create(username=name, password=password)
+        user = User.objects.create(username=name, password=password, has_dbuser=True)
         user.username = newname
         user.save()
 
@@ -58,7 +58,7 @@ class TestSave(TestCase):
         cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
         num_users_prior = len(cursor.fetchall())
 
-        user = User(username=name)
+        user = User(username=name, has_dbuser=True)
         user._state.db = connection.alias
         user.set_password(password)
 
@@ -85,7 +85,7 @@ class TestSave(TestCase):
         name = "John Doe"
         password = "12345"
 
-        User.objects.create(username=name, password=password)
+        User.objects.create(username=name, password=password, has_dbuser=True)
 
         user = User.objects.filter(username=name).first()
 
@@ -108,14 +108,40 @@ class TestSave(TestCase):
         cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
         num_users_prior = len(cursor.fetchall())
 
-        User.objects.create(username=name1, password=password)
-        User.objects.create(username=name2, password=password)
-        User.objects.create(username=name3, password=password)
+        User.objects.create(username=name1, password=password, has_dbuser=True)
+        User.objects.create(username=name2, password=password, has_dbuser=True)
+        User.objects.create(username=name3, password=password, has_dbuser=True)
 
         cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
         num_users_after_creation = len(cursor.fetchall())
 
         self.assertEqual(num_users_prior + 3, num_users_after_creation)
+
+        User.objects.all().delete()
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_deletion = len(cursor.fetchall())
+
+        self.assertEqual(num_users_after_deletion, num_users_prior)
+
+    def test_no_user_shall_be_created_if_has_dbuser_is_false(self):
+        cursor = connection.cursor()
+        name1 = "John Doe"
+        name2 = "Max Mustermann"
+        name3 = "Jean Dupont"
+        password = "12345"
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_prior = len(cursor.fetchall())
+
+        User.objects.create(username=name1, password=password, has_dbuser=True)
+        User.objects.create(username=name2, password=password, has_dbuser=False)
+        User.objects.create(username=name3, password=password, has_dbuser=True)
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_creation = len(cursor.fetchall())
+
+        self.assertEqual(num_users_prior + 2, num_users_after_creation)
 
         User.objects.all().delete()
 

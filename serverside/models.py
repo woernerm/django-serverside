@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import connection, connections
-from django.db.models import QuerySet
+from django.db.models import BooleanField, QuerySet
 
 from serverside.backends import get_backend
 
@@ -34,6 +34,14 @@ class UserManager(DjangoUserManager):
 
 class User(AbstractUser):
     DEFAULT_DATABASE = "default"
+
+    has_dbuser = BooleanField(
+        verbose_name="Database access",
+        help_text="Designates whether this user can access the database "
+        "directly using SQL. A password change is required before the "
+        "database can be accessed.",
+        default=False,
+    )
 
     objects = UserManager()
 
@@ -72,6 +80,9 @@ class User(AbstractUser):
     def set_password(self, raw_password):
         super().set_password(raw_password)
 
+        if not self.has_dbuser:
+            return
+
         if not self._backend.user_exists(self._dbusername):
             self._backend.create_user(self._dbusername, raw_password)
         else:
@@ -79,6 +90,11 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+        if not self.has_dbuser:
+            if self._backend.user_exists(self._dbusername):
+                self._backend.delete_user(self._dbusername)
+            return
 
         # Rename existing user, if necessary.
         if self._dbusername != self.username and self._backend.user_exists(
