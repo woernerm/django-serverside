@@ -21,7 +21,11 @@ class UserQuerySet(QuerySet):
     def bulk_create(
         self, objs, batch_size: Optional[int] = None, ignore_conflicts: bool = False
     ):
-        raise NotImplementedError("Database users cannot be created in bulk.")
+        super().bulk_create(objs, batch_size, ignore_conflicts)
+
+        backend = get_backend(self._db or self.DEFAULT_DATABASE)
+        data = [{"username": e.username, "password": e.password} for e in objs]
+        backend.bulk_create_user(data)
 
     def bulk_update(self, objs, fields, batch_size: Optional[int] = None) -> int:
         raise NotImplementedError("Database users cannot be updated in bulk.")

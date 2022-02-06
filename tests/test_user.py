@@ -149,3 +149,28 @@ class TestSave(TestCase):
         num_users_after_deletion = len(cursor.fetchall())
 
         self.assertEqual(num_users_after_deletion, num_users_prior)
+
+    def test_bulk_create_user_shall_create_multiple_users(self):
+        cursor = connection.cursor()
+        name1 = "John Doe"
+        name2 = "Max Mustermann"
+        name3 = "Jean Dupont"
+        password = "12345"
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_prior = len(cursor.fetchall())
+
+        users = [User(username=name1, password=password), User(username=name2, password=password), User(username=name3, password=password)]
+        User.objects.bulk_create(users)        
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_creation = len(cursor.fetchall())
+
+        self.assertEqual(num_users_prior + 3, num_users_after_creation)
+
+        User.objects.all().delete()
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_deletion = len(cursor.fetchall())
+
+        self.assertEqual(num_users_after_deletion, num_users_prior)

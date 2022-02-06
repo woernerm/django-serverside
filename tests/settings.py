@@ -15,10 +15,20 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "django-insecure-6ykua0qg+@r64=-u)@xekz4@=y4w3%#j)eaqjvscc3-l$45mf7"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# The name of the django project.
+PROJECT_NAME = "Genie"
 
 AUTH_USER_MODEL = "serverside.User"
 
@@ -30,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +71,8 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = "config.wsgi.application"
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -66,10 +80,11 @@ TEMPLATES = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "PASSWORD": "123456",
-        "USER": "serverside",
+        "HOST": "localhost",
+        "PASSWORD": "yLC!VdZ^sB#n?2PX",
         "NAME": "serverside_db",
-        "TEST": {"NAME": "test_serverside"},
+        "USER": "serverside",
+        "TEST": {"NAME": "test_database"},
     }
 }
 
@@ -106,11 +121,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/static/"
 
 # The directory in which uploaded files are stored.
 MEDIA_ROOT = BASE_DIR / "media"

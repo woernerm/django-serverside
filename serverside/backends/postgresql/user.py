@@ -67,35 +67,67 @@ class UserMixin:
         Raises:
             Exception: If the user already exists.
         """
-        if conn_limit is not None and conn_limit < 0:
-            raise ValueError("Parameter conn_limit must be positive or None.")
 
-        if expires is not None and type(expires) is not datetime:
-            raise TypeError("Parameter expires is not a datetime object.")
-
-        if expires is not None and (
-            expires.tzinfo is None or expires.tzinfo.utcoffset(expires) is None
-        ):
-            raise TypeError("Parameter expires is a naive. Provide a timezone.")
-
-        limit = -1 if conn_limit is None else conn_limit
-        valid = sql.SQL("")
-
-        if expires is not None:
-            valid = sql.SQL("VALID UNTIL ") + sql.Literal(expires.isoformat())
-
-        query = sql.SQL(
-            "CREATE ROLE {name} WITH LOGIN INHERIT CONNECTION LIMIT %s "
-            "PASSWORD %s {valid}"
-        ).format(name=sql.Identifier(username), valid=valid)
-
-        self._cursor.execute(
-            query,
-            (
-                limit,
-                password,
-            ),
+        self.bulk_create_user(
+            {
+                "username": username,
+                "password": password,
+                "expires": expires,
+                "conn_limit": conn_limit,
+            }
         )
+
+    def bulk_create_user(self, credentials: Union[dict, List[dict]]) -> None:
+        """
+        Create the user in the database, if it does not exist already.
+
+        Args:
+            password: The password the user shall have. If None is given, login will
+                always fail for PostgreSQL 8.2 or later.
+            expires: The date and time when the user's password shall expire. If the
+                password shall never expire, use None (default).
+            conn_limit: The number of concurrent connections of the user. If there shall
+                be no limit, use None (default).
+
+        Raises:
+            Exception: If the user already exists.
+        """
+        creds = [credentials] if type(credentials) is dict else credentials
+        commands = []
+        params = []
+        for entry in creds:
+            conn_limit = entry.get("conn_limit", None)
+            expires = entry.get("expires", None)
+            username = entry.get("username")
+            password = entry.get("password", None)
+
+            if conn_limit is not None and conn_limit < 0:
+                raise ValueError("Parameter conn_limit must be positive or None.")
+
+            if expires is not None and type(expires) is not datetime:
+                raise TypeError("Parameter expires is not a datetime object.")
+
+            if expires is not None and (
+                expires.tzinfo is None or expires.tzinfo.utcoffset(expires) is None
+            ):
+                raise TypeError("Parameter expires is a naive. Provide a timezone.")
+
+            limit = -1 if conn_limit is None else conn_limit
+            valid = sql.SQL("")
+
+            if expires is not None:
+                valid = sql.SQL("VALID UNTIL ") + sql.Literal(expires.isoformat())
+
+            commands.append(
+                sql.SQL(
+                    "CREATE ROLE {name} WITH LOGIN INHERIT CONNECTION LIMIT %s "
+                    "PASSWORD %s {valid};"
+                ).format(name=sql.Identifier(username), valid=valid)
+            )
+            params += [limit, password]
+
+        query = sql.SQL("\n").join(commands)
+        self._cursor.execute(query, params)
 
     def delete_user(self, username: str) -> None:
         """

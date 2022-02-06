@@ -18,4 +18,4 @@ def get_backend(using: Optional[str] = None) -> Optional[BackendBase]:
     for _, cls in getmembers(module, isclass):
         if cls.__name__.lower() == name.lower():
             return cls(connections[using].cursor())  # type: ignore
-    return None
+    return None  # pragma: no cover

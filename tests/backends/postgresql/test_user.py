@@ -34,7 +34,7 @@ class TestCreate(TestCase):
         # Verify that the correct password parameter is contained in the query.
         self.assertTrue("PASSWORD NULL" in command)
 
-    def test_create_shall_raise_an_exception_for_an_existing_PostgreSQL(self):
+    def test_create_shall_raise_an_exception_for_an_existing_PostgreSQL_user(self):
         cursor = connection.cursor()
         name = "John Doe"
         password = "12345"
@@ -92,6 +92,64 @@ class TestCreate(TestCase):
         result_limit, result_expire = cursor.fetchone()
         self.assertEqual(conn_limit, result_limit)
         self.assertEqual(expires, result_expire)
+
+
+class TestBulkCreate(TestCase):
+    def test_bulk_create_user_shall_create_a_PostgreSQL_user(self):
+        cursor = connection.cursor()
+        name = "John Doe"
+        password = "12345"
+        backend = PostgreSQL(cursor)
+        backend.bulk_create_user([{"username": name, "password": password}])
+
+        query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
+        cursor.execute(query, (name,))
+        self.assertIsNotNone(cursor.fetchone())
+
+    def test_bulk_create_user_shall_create_multiple_PostgreSQL_users(self):
+        cursor = connection.cursor()
+        name1 = "John Doe"
+        password1 = "12345"
+        name2 = "Max Mustermann"
+        password2 = "54321"
+        backend = PostgreSQL(cursor)
+        backend.bulk_create_user([{"username": name1, "password": password1}, {"username": name2, "password": password2}])
+
+        query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
+        cursor.execute(query, (name1,))
+        self.assertIsNotNone(cursor.fetchone())
+
+        query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
+        cursor.execute(query, (name2,))
+        self.assertIsNotNone(cursor.fetchone())
+
+    def test_bulk_create_user_shall_raise_an_exception_for_an_existing_PostgreSQL_users(self):
+        cursor = connection.cursor()
+        name = "John Doe"
+        password = "12345"
+        backend = PostgreSQL(cursor)
+        backend.create_user(name, password)
+
+        with self.assertRaises(Exception):
+            backend.bulk_create_user({"username": name, "password":password})
+
+    def test_bulk_create_user_shall_raise_exception_for_invalid_parameters(self):
+        cursor = connection.cursor()
+        nm = "John Doe"
+        pw = "12345"
+        backend = PostgreSQL(cursor)
+
+        with self.assertRaises(Exception):
+            backend.bulk_create_user({"username": nm, "password":pw, "conn_limit": -1})
+
+        with self.assertRaises(Exception):
+            backend.bulk_create_user({"username": nm, "password":pw, "conn_limit": -1})
+
+        with self.assertRaises(Exception):
+            backend.bulk_create_user({"username": nm, "password":pw, "expires": 42})
+
+        with self.assertRaises(Exception):
+            backend.bulk_create_user({"username": nm, "password":pw, "expires": datetime.now()})
 
 
 class TestExists(TestCase):
@@ -177,6 +235,23 @@ class TestGrant(TestCase):
         self.assertEqual(result[0][0], self._single_table_name)
         for i, tbl in enumerate(self._multiple_table_name):
             self.assertEqual(result[i + 1][0], tbl)
+
+    def test_grant_shall_raise_exception_for_invalid_parameters(self):
+        cursor = connection.cursor()
+        name = "John Doe"
+        password = "12345"
+        backend = PostgreSQL(cursor)
+
+        backend.create_user(name, password)
+
+        with self.assertRaises(Exception):
+            backend.grant(name, "selected", "table", self._single_table_name)
+
+        with self.assertRaises(Exception):
+            backend.grant(name, "selected", "tablesd", self._single_table_name)
+
+        with self.assertRaises(Exception):
+            backend.grant(name, "selected", "tables", "non_existent")
 
 
 class TestRevoke(TestCase):
