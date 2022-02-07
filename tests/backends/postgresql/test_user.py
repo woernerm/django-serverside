@@ -19,6 +19,7 @@ class TestCreate(TestCase):
         query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
         cursor.execute(query, (name,))
         self.assertIsNotNone(cursor.fetchone())
+        
 
     def test_create_with_no_password_shall_create_a_user_that_cannot_login(self):
         cursor = connection.cursor()
@@ -248,10 +249,13 @@ class TestGrant(TestCase):
             backend.grant(name, "selected", "table", self._single_table_name)
 
         with self.assertRaises(Exception):
-            backend.grant(name, "selected", "tablesd", self._single_table_name)
+            backend.grant(name, "SELECT", "tablesd", self._single_table_name)
 
         with self.assertRaises(Exception):
-            backend.grant(name, "selected", "tables", "non_existent")
+            backend.grant(name, "SELECT", "TABLE", "non_existent")
+
+        with self.assertRaises(Exception):
+            backend._alter_privilege(name, "GRANTED", "SELECT", "TABLE", self._single_table_name)
 
 
 class TestRevoke(TestCase):

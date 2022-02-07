@@ -48,6 +48,27 @@ class TestSave(TestCase):
         # Is there no user with the old name in django.
         self.assertFalse(User.objects.filter(username=name).exists())
 
+    def test_db_user_shall_be_deleted_if_django_user_is_deleted(self):
+        name = "John Doe"
+
+        user = User.objects.create(username=name, has_dbuser=True)
+        User.objects.filter(pk=user.pk).delete()
+        user.__del__()
+
+
+    def test_setting_the_password_with_no_db_user_shall_do_nothing(self):
+        cursor = connection.cursor()
+        name = "John Doe"
+        password = "12345"
+
+        oldquery = cursor.query
+        user = User.objects.create(username=name, has_dbuser=False)
+        user.set_password(password)
+
+        # Previous query has not changed.
+        self.assertEqual(cursor.query, oldquery)
+        
+
     def test_setting_the_password_shall_reate_a_temporary_user_in_database(self):
         cursor = connection.cursor()
         name = "John Doe"
@@ -169,6 +190,29 @@ class TestSave(TestCase):
         self.assertEqual(num_users_prior + 3, num_users_after_creation)
 
         User.objects.all().delete()
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_deletion = len(cursor.fetchall())
+
+        self.assertEqual(num_users_after_deletion, num_users_prior)
+
+    def test_setting_has_dbuser_to_false_shall_remove_db_user(self):
+        cursor = connection.cursor()
+        name1 = "John Doe"
+        password = "12345"
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_prior = len(cursor.fetchall())
+
+        user = User.objects.create(username=name1, password=password, has_dbuser=True)
+
+        cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
+        num_users_after_creation = len(cursor.fetchall())
+
+        self.assertEqual(num_users_prior + 1, num_users_after_creation)
+
+        user.has_dbuser = False
+        user.save()
 
         cursor.execute(sql.SQL("SELECT * FROM pg_roles"))
         num_users_after_deletion = len(cursor.fetchall())
