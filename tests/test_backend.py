@@ -13,4 +13,8 @@ class TestBackend(TestCase):
         self.assertIsNone(get_backend(""))
         self.assertIsNone(get_backend(None))
         self.assertIsNotNone(get_backend("default"))
+        
+        with self.assertRaises(Exception):
+            get_backend("not_existend")
+
 

@@ -59,7 +59,7 @@ class User(AbstractUser):
         cursor = connections[db].cursor() if db else connection.cursor()
         return self._meta.db_table in connection.introspection.get_table_list(cursor)
 
-    def __set_backend(self, dbname: Optional[str] = None):
+    def _set_backend(self, dbname: Optional[str] = None):
         backend = get_backend(dbname or self.DEFAULT_DATABASE)
 
         if self._backend is None or not self._backend:
@@ -69,7 +69,7 @@ class User(AbstractUser):
         if type(self._backend) is type(backend):
             return
 
-        if self._backend.user_exists(self._username):
+        if self._backend.user_exists(self._dbusername):
             raise Exception("Cannot switch backend after creating a temporary user.")
 
         self._backend = backend
@@ -107,7 +107,7 @@ class User(AbstractUser):
             self._backend.rename_user(self._dbusername, self.username)
         self._dbusername = self.username
 
-        self.__set_backend(kwargs.get("using", None) or self._state.db)
+        self._set_backend(kwargs.get("using", None) or self._state.db)
         if not self._backend.user_exists(self._dbusername):
             self._backend.create_user(self._dbusername)
 

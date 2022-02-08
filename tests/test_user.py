@@ -23,6 +23,43 @@ class TestSave(TestCase):
         # Is there a new user in django (exactly one).
         self.assertEqual(User.objects.filter(username=name).count(), 1)
 
+    def test_set_backend_shall_select_the_right_backend(self):
+        name = "John Doe"
+        password = "12345"
+
+        user = User.objects.create(username=name, password=password, has_dbuser=True)
+        user._backend = None
+        user._set_backend(None)
+        self.assertIsNotNone(user._backend)
+
+    def test_set_backend_shall_not_switch_backends_if_temporary_user_has_been_created(self):
+        from serverside.backends.postgresql import PostgreSQL
+        name = "John Doe"
+        password = "12345"
+
+        class MockTrue:
+            def __init__(self) -> None:
+                self.username = None
+
+            def user_exists(self, username):
+                return True
+
+        class MockFalse:
+            def __init__(self) -> None:
+                self.username = None
+
+            def user_exists(self, username):
+                return False
+
+        user = User.objects.create(username=name, password=password, has_dbuser=True)
+        user._backend = MockTrue()
+        with self.assertRaises(Exception):
+            user._set_backend(None)  
+
+        user._backend = MockFalse()   
+        user._set_backend(None)   
+        self.assertTrue(isinstance(user._backend, PostgreSQL)) 
+
     def test_changing_the_username_shall_rename_the_database_user(self):
         cursor = connection.cursor()
         name = "John Doe"
