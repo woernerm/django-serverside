@@ -7,7 +7,7 @@ from psycopg2 import sql
 from serverside.models import User
 
 
-class TestSave(TestCase):
+class TestUser(TestCase):
     def test_create_shall_create_a_new_user_in_database_and_django(self):
         cursor = connection.cursor()
         name = "John Doe"
@@ -31,6 +31,14 @@ class TestSave(TestCase):
         user._backend = None
         user._set_backend(None)
         self.assertIsNotNone(user._backend)
+
+    def test_bulk_update_shall_be_disabled(self):
+        prename = "Max Mustermann"
+        name = "John Doe"
+
+        with self.assertRaises(NotImplementedError):
+            users = [User(username=prename)]
+            User.objects.bulk_update(users, ["username"])
 
     def test_set_backend_shall_not_switch_backends_if_temporary_user_has_been_created(self):
         from serverside.backends.postgresql import PostgreSQL
@@ -86,11 +94,30 @@ class TestSave(TestCase):
         self.assertFalse(User.objects.filter(username=name).exists())
 
     def test_db_user_shall_be_deleted_if_django_user_is_deleted(self):
+        cursor = connection.cursor()
         name = "John Doe"
 
+        # No user with that name in the database
+        query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
+        cursor.execute(query, (name,))
+        self.assertIsNone(cursor.fetchone())
+
         user = User.objects.create(username=name, has_dbuser=True)
-        User.objects.filter(pk=user.pk).delete()
+        # There is a user with that name in the database
+        cursor.execute(query, (name,))
+        self.assertIsNotNone(cursor.fetchone())
+
+        super(User, user).delete() # Bypass backend user deletion.
+
+        # There is a user with that name in the database
+        cursor.execute(query, (name,))
+        self.assertIsNotNone(cursor.fetchone())
+        
         user.__del__()
+
+         # No user with that name in the database
+        cursor.execute(query, (name,))
+        self.assertIsNone(cursor.fetchone())
 
 
     def test_setting_the_password_with_no_db_user_shall_do_nothing(self):

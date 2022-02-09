@@ -57,7 +57,8 @@ class User(AbstractUser):
     def __user_table_exists(self):
         db = self._state.db
         cursor = connections[db].cursor() if db else connection.cursor()
-        return self._meta.db_table in connection.introspection.get_table_list(cursor)
+        tables = [t.name for t in connection.introspection.get_table_list(cursor)]
+        return self._meta.db_table in tables
 
     def _set_backend(self, dbname: Optional[str] = None):
         backend = get_backend(dbname or self.DEFAULT_DATABASE)
