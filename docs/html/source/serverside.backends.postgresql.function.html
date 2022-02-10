@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.backends.postgresql.function &#8212; django-serverside 22.2.8 documentation</title>
+    <title>serverside.backends.postgresql.function &#8212; django-serverside 22.2.9 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -231,18 +231,31 @@
                 
   <section id="module-serverside.backends.postgresql.function">
 <span id="serverside-backends-postgresql-function"></span><h1>serverside.backends.postgresql.function<a class="headerlink" href="#module-serverside.backends.postgresql.function" title="Permalink to this headline">¶</a></h1>
+<p>Defines how server-side functions are created with PostgreSQL.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.function.FunctionMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serverside.backends.postgresql.function.</span></span><span class="sig-name descname"><span class="pre">FunctionMixin</span></span><a class="headerlink" href="#serverside.backends.postgresql.function.FunctionMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mixin for managing and creating server-side functions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.function.FunctionMixin.create_function">
 <span class="sig-name descname"><span class="pre">create_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serverside.backends.postgresql.function.FunctionMixin.create_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the function in the database.</p>
 <p>If the function already exists, then it will be replaced.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>Exception</strong> – If the operation fails.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the function to be created.</p></li>
+<li><p><strong>filename</strong> – The path to the file containing the functions’ source code.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments which shall be passed to the template engine.
+These variables may then be used in the template to dynamically
+create / alter the functions code. This is useful to create multiple
+similar functions for different tables and types based on a common
+prototype.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>Exception</strong> – If the operation fails.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -251,12 +264,25 @@
 <dt class="sig sig-object py" id="serverside.backends.postgresql.function.FunctionMixin.delete_function">
 <span class="sig-name descname"><span class="pre">delete_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serverside.backends.postgresql.function.FunctionMixin.delete_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the function in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the function to delete.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.function.FunctionMixin.function_exists">
 <span class="sig-name descname"><span class="pre">function_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#serverside.backends.postgresql.function.FunctionMixin.function_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True, if the user already exists. False, otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the functions which shall be checked for existence.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True, if the function exists. False, otherwise.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

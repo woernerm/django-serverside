@@ -1,3 +1,7 @@
+"""
+This module defines a convenience function for accessing the right backend class.
+"""
+
 from importlib import import_module
 from inspect import getmembers, isclass
 from typing import Optional
@@ -9,6 +13,19 @@ from serverside.backends.base import BackendBase
 
 
 def get_backend(using: Optional[str] = None) -> Optional[BackendBase]:
+    """
+    Selects and returns a backend class depending on the given database name.
+
+    Multiple backends may be supported. Therefore, selecting the right one is best done
+    using this convenience function. It uses Django's DATABASES setting and the given
+    name (parameter using) to return the right backend class.
+
+    Args:
+        using: The settings.DATABASES entry that shall be used to select a backend.
+
+    Returns:
+        Specialized backend class. None, if no appropriate backend was found.
+    """
     if not using:
         return None
 

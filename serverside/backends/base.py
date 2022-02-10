@@ -15,6 +15,12 @@ class BackendBase(ABC):
 
     @abstractmethod
     def __init__(self, cursor) -> None:
+        """
+        Initializes the backend.
+
+        Args:
+            cursor: Database cursor.
+        """
         pass
 
     @abstractmethod
@@ -29,6 +35,7 @@ class BackendBase(ABC):
         Create the user in the database, if it does not exist already.
 
         Args:
+            username: The name of the user to create.
             password: The password the user shall have.
             expires: The date and time when the user's password shall expire. If the
                 password shall never expire, use None (default).
@@ -44,6 +51,9 @@ class BackendBase(ABC):
     def delete_user(self, username: str) -> None:
         """
         Delete the user in the database.
+
+        Args:
+            username: The name of the user to delete.
         """
         pass
 
@@ -51,11 +61,21 @@ class BackendBase(ABC):
     def user_exists(self, username: str) -> bool:
         """
         Returns True, if the user already exists. False, otherwise.
+
+        Args:
+            username: The username that shall be checked for existence.
         """
         pass
 
     @abstractmethod
     def rename_user(self, oldname: str, newname: str) -> None:
+        """
+        Renames a database user.
+
+        Args:
+            oldname: The username the database currently uses.
+            newname: The new username of the user.
+        """
         pass
 
     @abstractmethod
@@ -64,6 +84,7 @@ class BackendBase(ABC):
         Change the password of the user.
 
         Args:
+            username: The username of the user whose password shall be changed.
             password: The new password of the user.
 
         Raises:
@@ -79,6 +100,7 @@ class BackendBase(ABC):
         Grants privileges on the given objects.
 
         Args:
+            username: The name of the user who shall be granted a privilege.
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
             type_name: The type of object the grant targets, e.g. "TABLE" or "DATABASE".
             objects: The object names the grant is for, e.g. the name of the tables to
@@ -97,6 +119,7 @@ class BackendBase(ABC):
         Revokes privileges on the given objects.
 
         Args:
+            username: The name of the user who shall have a privilege revoked.
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
             type_name: The type of object the grant targets, e.g. "TABLE" or "DATABASE".
             objects: The object names the grant is for, e.g. the name of the tables to
@@ -114,6 +137,15 @@ class BackendBase(ABC):
 
         If the function already exists, then it will be replaced.
 
+        Args:
+            name: The name of the function to be created.
+            filename: The path to the file containing the functions' source code.
+            kwargs: Keyword arguments which shall be passed to the template engine.
+                These variables may then be used in the template to dynamically
+                create / alter the functions code. This is useful to create multiple
+                similar functions for different tables and types based on a common
+                prototype.
+
         Raises:
             Exception: If the operation fails.
         """
@@ -123,6 +155,9 @@ class BackendBase(ABC):
     def delete_function(self, name: str):
         """
         Delete the function in the database.
+
+        Args:
+            name: The name of the function to delete.
         """
         pass
 
@@ -130,5 +165,11 @@ class BackendBase(ABC):
     def function_exists(self, name: str) -> bool:
         """
         Returns True, if the user already exists. False, otherwise.
+
+        Args:
+            name: The name of the functions which shall be checked for existence.
+
+        Retunrs:
+            True, if the function exists. False, otherwise.
         """
         pass

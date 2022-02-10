@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.backends.postgresql.user &#8212; django-serverside 22.2.8 documentation</title>
+    <title>serverside.backends.postgresql.user &#8212; django-serverside 22.2.9 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -231,6 +231,7 @@
                 
   <section id="module-serverside.backends.postgresql.user">
 <span id="serverside-backends-postgresql-user"></span><h1>serverside.backends.postgresql.user<a class="headerlink" href="#module-serverside.backends.postgresql.user" title="Permalink to this headline">¶</a></h1>
+<p>Defines how users are managed with PostgreSQL:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serverside.backends.postgresql.user.</span></span><span class="sig-name descname"><span class="pre">UserMixin</span></span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin" title="Permalink to this definition">¶</a></dt>
@@ -239,17 +240,12 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.bulk_create_user">
 <span class="sig-name descname"><span class="pre">bulk_create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin.bulk_create_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create the user in the database, if it does not exist already.</p>
+<dd><p>Creates one or more users in bulk in the database, if it does not exist already.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>password</strong> – The password the user shall have. If None is given, login will
-always fail for PostgreSQL 8.2 or later.</p></li>
-<li><p><strong>expires</strong> – The date and time when the user’s password shall expire. If the
-password shall never expire, use None (default).</p></li>
-<li><p><strong>conn_limit</strong> – The number of concurrent connections of the user. If there shall
-be no limit, use None (default).</p></li>
-</ul>
+<dd class="field-odd"><p><strong>credentials</strong> – Dictionary or list of dictionaries which define the parameters
+used for creating the user(s). The names are the same as for
+create_user(..).</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>Exception</strong> – If the user already exists.</p>
@@ -263,7 +259,10 @@ be no limit, use None (default).</p></li>
 <dd><p>Change the password of the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>password</strong> – The new password of the user.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The username of the user whose password shall be changed.</p></li>
+<li><p><strong>password</strong> – The new password of the user.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>Exception</strong> – If the operation fails.</p>
@@ -278,8 +277,8 @@ be no limit, use None (default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>password</strong> – The password the user shall have. If None is given, login will
-always fail for PostgreSQL 8.2 or later.</p></li>
+<li><p><strong>username</strong> – The name of the user to create.</p></li>
+<li><p><strong>password</strong> – The password the user shall have.</p></li>
 <li><p><strong>expires</strong> – The date and time when the user’s password shall expire. If the
 password shall never expire, use None (default).</p></li>
 <li><p><strong>conn_limit</strong> – The number of concurrent connections of the user. If there shall
@@ -296,6 +295,11 @@ be no limit, use None (default).</p></li>
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.delete_user">
 <span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin.delete_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the user in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> – The name of the user to delete.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -305,6 +309,7 @@ be no limit, use None (default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The name of the user who shall be granted a privilege.</p></li>
 <li><p><strong>privilege</strong> – The name of the privilege to grant, e.g. “UPDATE” or “SELECT”.</p></li>
 <li><p><strong>type_name</strong> – The type of object the grant targets, e.g. “TABLE” or “DATABASE”.</p></li>
 <li><p><strong>objects</strong> – The object names the grant is for, e.g. the name of the tables to
@@ -320,7 +325,16 @@ grant an “UPDATE” privilege to.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.rename_user">
 <span class="sig-name descname"><span class="pre">rename_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oldname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin.rename_user" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Renames a database user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oldname</strong> – The username the database currently uses.</p></li>
+<li><p><strong>newname</strong> – The new username of the user.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.revoke">
@@ -329,6 +343,7 @@ grant an “UPDATE” privilege to.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The name of the user who shall have a privilege revoked.</p></li>
 <li><p><strong>privilege</strong> – The name of the privilege to grant, e.g. “UPDATE” or “SELECT”.</p></li>
 <li><p><strong>type_name</strong> – The type of object the grant targets, e.g. “TABLE” or “DATABASE”.</p></li>
 <li><p><strong>objects</strong> – The object names the grant is for, e.g. the name of the tables to
@@ -345,6 +360,14 @@ grant an “UPDATE” privilege to.</p></li>
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.user_exists">
 <span class="sig-name descname"><span class="pre">user_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin.user_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True, if the user already exists. False, otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> – The username that shall be checked for existence.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True, if the user exists. False, otherwise.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

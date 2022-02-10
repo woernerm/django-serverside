@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.backends.base &#8212; django-serverside 22.2.8 documentation</title>
+    <title>serverside.backends.base &#8212; django-serverside 22.2.9 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -240,7 +240,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.__init__">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.base.BackendBase.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes the backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cursor</strong> – Database cursor.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.change_password">
@@ -248,7 +254,10 @@
 <dd><p>Change the password of the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>password</strong> – The new password of the user.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The username of the user whose password shall be changed.</p></li>
+<li><p><strong>password</strong> – The new password of the user.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>Exception</strong> – If the operation fails.</p>
@@ -262,8 +271,19 @@
 <dd><p>Creates the function in the database.</p>
 <p>If the function already exists, then it will be replaced.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>Exception</strong> – If the operation fails.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the function to be created.</p></li>
+<li><p><strong>filename</strong> – The path to the file containing the functions’ source code.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments which shall be passed to the template engine.
+These variables may then be used in the template to dynamically
+create / alter the functions code. This is useful to create multiple
+similar functions for different tables and types based on a common
+prototype.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>Exception</strong> – If the operation fails.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,6 +295,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The name of the user to create.</p></li>
 <li><p><strong>password</strong> – The password the user shall have.</p></li>
 <li><p><strong>expires</strong> – The date and time when the user’s password shall expire. If the
 password shall never expire, use None (default).</p></li>
@@ -292,18 +313,37 @@ be no limit, use None (default).</p></li>
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.delete_function">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serverside.backends.base.BackendBase.delete_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the function in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the function to delete.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.delete_user">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.base.BackendBase.delete_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the user in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> – The name of the user to delete.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.function_exists">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">function_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#serverside.backends.base.BackendBase.function_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True, if the user already exists. False, otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the functions which shall be checked for existence.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Retunrs:</dt><dd><p>True, if the function exists. False, otherwise.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -313,6 +353,7 @@ be no limit, use None (default).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The name of the user who shall be granted a privilege.</p></li>
 <li><p><strong>privilege</strong> – The name of the privilege to grant, e.g. “UPDATE” or “SELECT”.</p></li>
 <li><p><strong>type_name</strong> – The type of object the grant targets, e.g. “TABLE” or “DATABASE”.</p></li>
 <li><p><strong>objects</strong> – The object names the grant is for, e.g. the name of the tables to
@@ -328,7 +369,16 @@ grant an “UPDATE” privilege to.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.rename_user">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rename_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oldname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#serverside.backends.base.BackendBase.rename_user" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Renames a database user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oldname</strong> – The username the database currently uses.</p></li>
+<li><p><strong>newname</strong> – The new username of the user.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.revoke">
@@ -337,6 +387,7 @@ grant an “UPDATE” privilege to.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – The name of the user who shall have a privilege revoked.</p></li>
 <li><p><strong>privilege</strong> – The name of the privilege to grant, e.g. “UPDATE” or “SELECT”.</p></li>
 <li><p><strong>type_name</strong> – The type of object the grant targets, e.g. “TABLE” or “DATABASE”.</p></li>
 <li><p><strong>objects</strong> – The object names the grant is for, e.g. the name of the tables to
@@ -353,6 +404,11 @@ grant an “UPDATE” privilege to.</p></li>
 <dt class="sig sig-object py" id="serverside.backends.base.BackendBase.user_exists">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#serverside.backends.base.BackendBase.user_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True, if the user already exists. False, otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> – The username that shall be checked for existence.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

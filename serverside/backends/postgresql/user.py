@@ -1,3 +1,7 @@
+"""
+Defines how users are managed with PostgreSQL:
+"""
+
 from datetime import datetime
 from typing import List, Optional, Union
 
@@ -57,8 +61,8 @@ class UserMixin:
         Create the user in the database, if it does not exist already.
 
         Args:
-            password: The password the user shall have. If None is given, login will
-                always fail for PostgreSQL 8.2 or later.
+            username: The name of the user to create.
+            password: The password the user shall have.
             expires: The date and time when the user's password shall expire. If the
                 password shall never expire, use None (default).
             conn_limit: The number of concurrent connections of the user. If there shall
@@ -79,15 +83,12 @@ class UserMixin:
 
     def bulk_create_user(self, credentials: Union[dict, List[dict]]) -> None:
         """
-        Create the user in the database, if it does not exist already.
+        Creates one or more users in bulk in the database, if it does not exist already.
 
         Args:
-            password: The password the user shall have. If None is given, login will
-                always fail for PostgreSQL 8.2 or later.
-            expires: The date and time when the user's password shall expire. If the
-                password shall never expire, use None (default).
-            conn_limit: The number of concurrent connections of the user. If there shall
-                be no limit, use None (default).
+            credentials: Dictionary or list of dictionaries which define the parameters
+                used for creating the user(s). The names are the same as for
+                create_user(..).
 
         Raises:
             Exception: If the user already exists.
@@ -132,6 +133,9 @@ class UserMixin:
     def delete_user(self, username: str) -> None:
         """
         Delete the user in the database.
+
+        Args:
+            username: The name of the user to delete.
         """
 
         self._cursor.execute("SELECT CURRENT_DATABASE()")
@@ -185,6 +189,12 @@ class UserMixin:
     def user_exists(self, username: str) -> bool:
         """
         Returns True, if the user already exists. False, otherwise.
+
+        Args:
+            username: The username that shall be checked for existence.
+
+        Returns:
+            True, if the user exists. False, otherwise.
         """
         query = sql.SQL("SELECT oid FROM pg_roles WHERE rolname = %s")
 
@@ -192,6 +202,13 @@ class UserMixin:
         return self._cursor.fetchone() is not None
 
     def rename_user(self, oldname: str, newname: str) -> None:
+        """
+        Renames a database user.
+
+        Args:
+            oldname: The username the database currently uses.
+            newname: The new username of the user.
+        """
         query = sql.SQL("ALTER ROLE {oldname} RENAME TO {newname}").format(
             oldname=sql.Identifier(oldname), newname=sql.Identifier(newname)
         )
@@ -203,6 +220,7 @@ class UserMixin:
         Change the password of the user.
 
         Args:
+            username: The username of the user whose password shall be changed.
             password: The new password of the user.
 
         Raises:
@@ -225,6 +243,7 @@ class UserMixin:
         Grants or revokes privileges on the given objects.
 
         Args:
+            username: The name of the user for which privileges shall be altered.
             operation: Either "GRANT" or "REVOKE".
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
             type_name: The type of object the grant targets, e.g. "TABLE" or "DATABASE".
@@ -270,6 +289,7 @@ class UserMixin:
         Grants privileges on the given objects.
 
         Args:
+            username: The name of the user who shall be granted a privilege.
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
             type_name: The type of object the grant targets, e.g. "TABLE" or "DATABASE".
             objects: The object names the grant is for, e.g. the name of the tables to
@@ -287,6 +307,7 @@ class UserMixin:
         Revokes privileges on the given objects.
 
         Args:
+            username: The name of the user who shall have a privilege revoked.
             privilege: The name of the privilege to grant, e.g. "UPDATE" or "SELECT".
             type_name: The type of object the grant targets, e.g. "TABLE" or "DATABASE".
             objects: The object names the grant is for, e.g. the name of the tables to
