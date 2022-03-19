@@ -317,3 +317,6 @@ class UserMixin:
             Exception: If the operation fails.
         """
         self._alter_privilege(username, "REVOKE", privilege, type_name, objects)
+
+    def get_privileges(self):
+        return self.__PRIVILEGES

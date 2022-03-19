@@ -10,6 +10,7 @@ from django.db.models.signals import post_migrate
 
 from .signals import create_permissions
 
+
 class ServersideConfig(AppConfig):
     """
     App configuration class.

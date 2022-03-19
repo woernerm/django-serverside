@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The Luxury Python Template &#8212; django-serverside 22.2.9 documentation</title>
+    <title>Django-Serverside &#8212; django-serverside 22.3.0 documentation</title>
     
     <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -129,34 +129,12 @@
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#">
-   The Luxury Python Template
+   Django-Serverside
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#example-report">
-     Example Report
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#quick-guide">
-     Quick Guide
-    </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#commands">
-       Commands
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#frequently-asked-questions">
-     Frequently Asked Questions
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#license">
-     License
+    <a class="reference internal nav-link" href="#installation">
+     Installation
     </a>
    </li>
   </ul>
@@ -194,136 +172,28 @@
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="the-luxury-python-template">
-<h1>The Luxury Python Template<a class="headerlink" href="#the-luxury-python-template" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="django-serverside">
+<h1>Django-Serverside<a class="headerlink" href="#django-serverside" title="Permalink to this headline">¶</a></h1>
 <p><img alt="build" src="_images/build.svg" />
 <img alt="test" src="_images/test.svg" />
 <img alt="coverage" src="_images/test_coverage.svg" />
 <img alt="doc coverage" src="_images/doc_coverage.svg" />
 <img alt="vulnerabilities" src="_images/vulnerabilities.svg" />
 <a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
-<p>There are great tools available to automatically style, analyze and build your code.
-They help you deliver better products faster. However, you have to learn how they work,
-configure them and clean up after them. It’s easy to forgo this tedious work in the
-beginning when all you can think about is the bright idea behind your new python
-package. Will you do that later on? Probably not, because then chances are high that you
-get hundreds of complaints from these tools and fixing them all will likely set you back
-for weeks. Its way more fun to focus on new features anyway.  <br /></p>
-<p>Writing better code would be so much easier if any new project, regardless of whether it
-starts out as an afternoon experiment or the next big thing, would already include all
-of the bells and whistles that professional packages use. For free and without having to
-register yourself for yet another online service.  <br /></p>
-<p>With the luxury python template, you can have all that right from the start! It is very
-opinionated, meaning the only thing you have to think about is the project name. It
-comes with a single, zero configuration command-line tool. Its options are intentionally
-limited and therefore easy to remember. You get everything with a single call of:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py build
+<p>This is an app for <a class="reference external" href="https://www.djangoproject.com/">Django</a> that allows you to create
+database users directly from Django’s admin interface. This is useful for data science
+applications. For example, allowing privileged users to query data using analysis tools
+like <span class="xref myst">Matlab</span> or
+<a class="reference external" href="https://www.microsoft.com/de-de/microsoft-365/excel">Excel</a>. They can then use SQL for
+advanced database queries for scientific analysis.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The project is an early development phase. It is not yet available in the
+<a class="reference external" href="https://pypi.org/">Python Package Index</a>. However, you can install it from github
+using:</p>
+<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python -m pip install git+https://github.com/woernerm/django-serverside.git
 </pre></div>
 </div>
-<p>This includes:</p>
-<ul class="simple">
-<li><p>Installing all needed dependencies.</p></li>
-<li><p>Sorting import statements alphabetically with <a class="reference external" href="https://pycqa.github.io/isort/">isort</a>.</p></li>
-<li><p>Styling your code <a class="reference external" href="https://github.com/psf/black">Black</a>.</p></li>
-<li><p>Static type analysis with <a class="reference external" href="https://github.com/python/mypy">MyPy</a>.</p></li>
-<li><p>Checking for residual style errors with <a class="reference external" href="https://github.com/PyCQA/flake8">Flake8</a>.</p></li>
-<li><p>Checking for security issues with <a class="reference external" href="https://github.com/PyCQA/bandit">Bandit</a>.</p></li>
-<li><p>Checking for known vulnerabilities in dependencies with <a class="reference external" href="https://github.com/pyupio/safety">Safety</a>.</p></li>
-<li><p>Running tests with <a class="reference external" href="https://docs.python.org/3/library/unittest.html">Unittest</a> and
-evaluating test coverage with <a class="reference external" href="https://github.com/nedbat/coveragepy">Coverage.py</a></p></li>
-<li><p>Generating documentation with <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> and
-markdown support from <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/">MySt</a>.</p></li>
-<li><p>Checking for undocumented code (built into <code class="docutils literal notranslate"><span class="pre">package.py</span></code>).</p></li>
-<li><p>Generating a single, beautiful report for all of the above with <a class="reference external" href="https://picocss.com/">Pico.css</a>.</p></li>
-<li><p>Building wheel files and incrementing the version number according to
-<a class="reference external" href="https://calver.org/">calendar versioning</a>.</p></li>
-<li><p>Generating badges with the most important metrics for your repository like the ones
-shown above.</p></li>
-<li><p>Removing temporary files and folders.</p></li>
-</ul>
-<section id="example-report">
-<h2>Example Report<a class="headerlink" href="#example-report" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">package.py</span></code> tool that comes with the template can generate a single,
-beautiful report that summarizes the results of the above-mentioned tools. Want an example?
-Have a look at the following, problematic code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-
-<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-
-<span class="k">def</span> <span class="nf">getHash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is an example function for encrypting passwords.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        pw: The password to be encrypted.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>In this example, the code is stored in <code class="docutils literal notranslate"><span class="pre">src/bad_example.py</span></code>. If you run
-<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">package.py</span> <span class="pre">build</span></code> you will get the report.
-<a class="reference external" href="https://woernerm.github.io/luxury_python_template/">Have a look!</a></p>
-</section>
-<section id="quick-guide">
-<h2>Quick Guide<a class="headerlink" href="#quick-guide" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li><p>The template follows the instructions of the
-<a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/">PyPa packaging tutorial</a>.
-So, it should look familiar to most people. Using the template is easy. Just click the
-green “Use this template” button above (you need to be signed into GitHub) to create
-your own repository with all the files automatically copied from this template.
-Alternatively, you may just download / clone a copy of the files.</p></li>
-<li><p>Provide some information about your project in setup.cfg. You can find details about
-the fields in the
-<a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/#configuring-metadata">PyPa packaging tutorial</a>.
-You may leave the version as it is. It is set automatically by <code class="docutils literal notranslate"><span class="pre">package.py</span></code>.</p></li>
-<li><p>Rename <code class="docutils literal notranslate"><span class="pre">src/pythontemplate</span></code> to whatever you like. The name determines how to import
-the package in a python script. You should therefore omit spaces, underscores, and
-dashes. You can add as many of these top-level folders as you like.</p></li>
-</ol>
-<section id="commands">
-<h3>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
-<p>You can access the help of <code class="docutils literal notranslate"><span class="pre">package.py</span></code> by running:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py --help
-</pre></div>
-</div>
-<p>As explained above, you can build your wheel files and get a detailed report about your
-code by running:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py build
-</pre></div>
-</div>
-<p>The build command is also the only one that will update the badges. If you only want the
-detailed report, just run:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py report
-</pre></div>
-</div>
-<p>If you want to generate just the documentation and not get any report, use:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py doc
-</pre></div>
-</div>
-<p>If you want to remove the wheel files, documentation, and report:</p>
-<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python package.py remove
-</pre></div>
-</div>
-</section>
-</section>
-<section id="frequently-asked-questions">
-<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h2>
-<p>If you run the build or report command, you may get the following error:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">:</span> <span class="n">HTTPSConnectionPool</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;raw.githubusercontent.com&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">443</span><span class="p">):</span> <span class="n">Read</span> <span class="n">timed</span> <span class="n">out</span><span class="o">.</span>
-</pre></div>
-</div>
-<p>This is because checking for dependency vulnerabilities using
-<a class="reference external" href="https://github.com/pyupio/safety">Safety</a> requires a connection to a database. If you
-are getting this error, it means that the database is not reachable. This may happen
-either because your internet connection encountered some issues, or the database is
-currently unavailable for whatever reason.</p>
-</section>
-<section id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p>The package is distributed under Apache License 2.0. You can use it for anything you
-want! Attribution would be nice, but you do not have to.  ;)</p>
 <br />
 </section>
 </section>

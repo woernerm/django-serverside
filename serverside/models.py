@@ -1,11 +1,13 @@
 from typing import Optional
 from uuid import uuid4
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.auth.models import UserManager as DjangoUserManager
+from django.contrib.contenttypes.models import ContentType
 from django.db import connection, connections
 from django.db.models import BooleanField, QuerySet
 
+from serverside import utils
 from serverside.backends import get_backend
 
 
@@ -79,7 +81,11 @@ class User(AbstractUser):
         # Remove users from the database that may have been only temporary.
         # This is not relevant, if the User model does not yet have a table (i.e. if
         # the code was run in the context of makemigrations).
-        if self.__user_table_exists() and not User.objects.filter(pk=self.pk).exists():
+        if (
+            self.has_dbuser
+            and self.__user_table_exists()
+            and not User.objects.filter(pk=self.pk).exists()
+        ):
             self._backend.delete_user(self._dbusername)
 
     def set_password(self, raw_password):
@@ -111,6 +117,17 @@ class User(AbstractUser):
         self._set_backend(kwargs.get("using", None) or self._state.db)
         if not self._backend.user_exists(self._dbusername):
             self._backend.create_user(self._dbusername)
+
+        models = utils.get_all_models(True, False)
+        privileges = self._backend.get_privileges()
+        for priv in privileges:
+            for m in models:
+                app_label = m._meta.app_label
+                codename = utils.get_permission_codename(priv, m)
+                permission = f"{app_label}.{codename}"
+                table = m._meta.db_table
+                if self.has_perm(permission):
+                    self._backend.grant(self._dbusername, priv, "table", table)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.apps &#8212; django-serverside 22.2.9 documentation</title>
+    <title>serverside.apps &#8212; django-serverside 22.3.0 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -188,6 +188,16 @@
      serverside.models
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="serverside.signals.html">
+     serverside.signals
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="serverside.utils.html">
+     serverside.utils
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -239,6 +249,12 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serverside.apps.</span></span><span class="sig-name descname"><span class="pre">ServersideConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serverside.apps.ServersideConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
 <p>App configuration class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="serverside.apps.ServersideConfig.ready">
+<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#serverside.apps.ServersideConfig.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this method in subclasses to run code when Django starts.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="serverside.apps.ServersideConfig.default_auto_field">
 <span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#serverside.apps.ServersideConfig.default_auto_field" title="Permalink to this definition">¶</a></dt>
