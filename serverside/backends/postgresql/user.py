@@ -319,4 +319,12 @@ class UserMixin:
         self._alter_privilege(username, "REVOKE", privilege, type_name, objects)
 
     def get_privileges(self):
+        """
+        Returns all available privileges of the database.
+
+        Returns:
+            The method returns a set with entries such as "SELECT", "INSERT", "CREATE",
+            or "DELETE". The list includes all privileges that can be granted to a
+            database user.
+        """
         return self.__PRIVILEGES

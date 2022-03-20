@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.backends.postgresql.user &#8212; django-serverside 22.3.2 documentation</title>
+    <title>serverside.backends.postgresql.user &#8212; django-serverside 22.3.8 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -310,7 +310,15 @@ be no limit, use None (default).</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.get_privileges">
 <span class="sig-name descname"><span class="pre">get_privileges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#serverside.backends.postgresql.user.UserMixin.get_privileges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns all available privileges of the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The method returns a set with entries such as “SELECT”, “INSERT”, “CREATE”,
+or “DELETE”. The list includes all privileges that can be granted to a
+database user.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="serverside.backends.postgresql.user.UserMixin.grant">

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.utils &#8212; django-serverside 22.3.2 documentation</title>
+    <title>serverside.utils &#8212; django-serverside 22.3.8 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -235,15 +235,45 @@
                 
   <section id="module-serverside.utils">
 <span id="serverside-utils"></span><h1>serverside.utils<a class="headerlink" href="#module-serverside.utils" title="Permalink to this headline">¶</a></h1>
+<p>This module defines utility functions used in various places of the package.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="serverside.utils.get_all_models">
 <span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_all_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_auto_created</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_swapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">django.db.models.base.Model</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#serverside.utils.get_all_models" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns all models of all installed django apps.</p>
+<p>In contrast to get_models() method of django’s AppConfig class, this function
+returns the models of all installed apps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_auto_created</strong> – Whether to include auto-created models for many-to-many
+relations without an explicit intermediate table. Set to True to include
+them. False, otherwise.</p></li>
+<li><p><strong>include_swapped</strong> – Whether to include models that have been swapped out. Set to
+True to include them. False, otherwise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all models of all installed django apps.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="serverside.utils.get_permission_codename">
 <span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_permission_codename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">privilege</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">django.db.models.base.Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#serverside.utils.get_permission_codename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a standardized permission codename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>privilege</strong> – The name of the database privilege to create a codename for.</p></li>
+<li><p><strong>model</strong> – The name of the model to create a permission codename for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The permission codename for the given database privilege and django model.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

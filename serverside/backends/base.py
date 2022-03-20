@@ -4,7 +4,6 @@ This module contains a common interface definition for all backends.
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from pathlib import Path
 from typing import List, Optional, Union
 
 

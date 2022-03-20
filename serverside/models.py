@@ -1,9 +1,8 @@
 from typing import Optional
 from uuid import uuid4
 
-from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as DjangoUserManager
-from django.contrib.contenttypes.models import ContentType
 from django.db import connection, connections
 from django.db.models import BooleanField, QuerySet
 
