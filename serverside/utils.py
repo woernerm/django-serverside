@@ -6,7 +6,7 @@ from django.db.models import Model
 
 
 def get_permission_codename(privilege: str, model: Model) -> str:
-    return f"can_{privilege.lower()}_{model._meta.label}"
+    return f"can_{privilege.lower()}_{model._meta.db_table.lower()}"
 
 
 def get_all_models(include_auto_created: bool, include_swapped: bool) -> List[Model]:

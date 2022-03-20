@@ -120,13 +120,18 @@ class User(AbstractUser):
 
         models = utils.get_all_models(True, False)
         privileges = self._backend.get_privileges()
+
+        # Requesting new instance of the user, because permissions are cached as
+        # outlined here:
+        # https://docs.djangoproject.com/en/4.0/topics/auth/default/#topic-authorization
+        tmpuser = User.objects.get(pk=self.pk)
         for priv in privileges:
             for m in models:
-                app_label = m._meta.app_label
                 codename = utils.get_permission_codename(priv, m)
-                permission = f"{app_label}.{codename}"
+                perm_name = f"{m._meta.app_label}.{codename}"
                 table = m._meta.db_table
-                if self.has_perm(permission):
+                # Granting privilege in database.
+                if tmpuser.has_perm(perm_name):
                     self._backend.grant(self._dbusername, priv, "table", table)
 
     def delete(self, *args, **kwargs):

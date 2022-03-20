@@ -13,7 +13,7 @@ def create_permissions(*args, **kwargs):
     models = utils.get_all_models(True, False)
     for m in models:
         codename = utils.get_permission_codename("select", m)
-        name = f"Can SELECT from {m._meta.verbose_name}"
+        name = f"Can SELECT from {m._meta.db_table} table"
         content_type = ContentType.objects.get_for_model(m)
 
         Permission.objects.update_or_create(
