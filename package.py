@@ -44,7 +44,7 @@ from pathlib import Path
 import contextlib
 import io
 import platform
-
+from urllib.parse import quote
 
 class Settings:
     """
@@ -852,6 +852,64 @@ class Meta:
         return str(date.year) + ", " + self.get("author")
 
 
+class AbsBadge:
+    """
+    Class for generating badges that can be displayed on PyPi
+
+    As of 2022-03-20, PyPi does not allow relative images paths. Therefore, the images
+    need to be hosted somewhere else and included in the readme as an absolute 
+    http://... link. The badges on PyPi should only show the state of the most recent
+    release available on PyPi. Therefore, one cannot use a link to the current version
+    on github, because the state might be different. Likewise, at the state of building
+    the commit hash is not known. Therefore, the images need to be available somewhere
+    else. This is done by using the simple https://shields.io/ api.
+    """
+
+    def __init__(self, settings: Settings) -> None:
+        """
+        Initialize the class with settings.
+
+        Args:
+            settings: The settings instance to use.
+            badge: Instance of a badge class.
+        """
+        self._settings = settings
+        meta = Meta(settings.CONFIGFILE)
+        self._readmefilename = meta.get("long_description").split(":")[1].strip()
+        self._rel_abs_map = dict()
+        with open(self._readmefilename, "r") as file:
+            self._readme = file.read()
+    
+    def replace_badge(self, badgefile:str, title:str, text:str, color:str):
+        link_stem = f"https://img.shields.io/static/v1?label={quote(title)}&message="
+        link = link_stem + f"{quote(text)}&color={quote(color)}"
+        # Replace address, if shields.io badge is used.
+        link_regex = r"\([ ]*" + re.escape(link_stem) + r"[^\)]*?[ ]*\)" 
+        badgefile_left = badgefile.replace("/", "\\")
+        badgefile_right = badgefile.replace("\\", "/")
+        self._rel_abs_map[badgefile_right] = link_regex
+
+        if badgefile_right in self._readme or badgefile_left in self._readme:
+            # Replace static badge file independent of slash direction.
+            self._readme = self._readme.replace(badgefile_left, link)
+            self._readme = self._readme.replace(badgefile_right, link) 
+        else:
+            self._readme = re.sub(link_regex, f"({link})", self._readme)         
+
+    def write_absolute_readme(self):
+        with open(self._readmefilename, "w") as file:
+            file.write(self._readme)
+
+    def write_relative_readme(self):
+        for badgefile, link_regex in self._rel_abs_map.items():
+            self._readme = re.sub(link_regex, f"({badgefile})", self._readme)
+
+        with open(self._readmefilename, "w") as file:
+            file.write(self._readme)
+
+
+
+
 class Badge:
     """
     Class for generating badges that can be displayed in readme files or elsewhere.
@@ -871,8 +929,20 @@ class Badge:
             settings: The settings instance to use.
         """
         self._settings = settings
+        self._absbadge = AbsBadge(settings)
 
-    def _write(self, badgename: str, data: str):
+    def get_badgefile(self, badgename:str) -> str:
+        """
+        Returns the filename to the badge with the given name.
+
+        Returns:
+            File path to the badge's svg file.
+        """
+        filename = badgename.replace(" ", "_")
+        badgefolder = os.path.normpath(self._settings.BADGE_FOLDER)
+        return f"{badgefolder}\\{filename}.svg"
+
+    def _write(self, badgefile:str, data: str):
         """
         Write the given SVG data to a file in the repository as given by the settings.
 
@@ -880,8 +950,6 @@ class Badge:
             badgename: The filename of the badge.
             data: The SVG data to be written to a file in the repository.
         """
-        badgefolder = os.path.normpath(self._settings.BADGE_FOLDER)
-        badgefile = f"{badgefolder}\\{badgename}.svg"
 
         mkdirs_if_not_exists(self._settings.BADGE_FOLDER)
         with open(badgefile, "w") as f:
@@ -925,6 +993,27 @@ class Badge:
         applicable = [k for k in thresholddict.keys() if value <= k]
         return str(thresholddict[min(applicable)]) if applicable else "red"
 
+    def get_coverage_badge_data(self, title: str, value: float, thresholds: dict):
+        coverage = math.floor(value)
+        color = self._getThresholdColorGTE(thresholds, coverage)
+        return (title, f"{coverage}%", color)
+
+    def get_issue_badge_data(self, title: str, value: Optional[int], thresholds: dict):
+        nissues = str(value)
+        color = "red"
+
+        if value is not None:
+            color = self._getThresholdColorLTE(thresholds, value)
+        else:
+            nissues = "Unknown"
+
+        return (title, str(nissues), color)
+
+    def get_passfail_badge_data(self, name: str, passing: bool):
+        text = "passing" if passing else "failing"
+        color = "brightgreen" if passing else "red"
+        return (name, text, color)
+
     def coverage_badge(self, title: str, value: float, thresholds: dict):
         """
         Generates a badge for coverage.
@@ -935,12 +1024,14 @@ class Badge:
             thresholds: The threshold dictionary to use for assigning colors.
         """
         import pybadges
-        coverage = math.floor(value)
-        color = self._getThresholdColorGTE(thresholds, coverage)
+        badge_data = self.get_coverage_badge_data(title, value, thresholds)
         data = pybadges.badge(
-            left_text=title, right_text=f"{coverage}%", right_color=color
+            left_text=badge_data[0], right_text=badge_data[1], right_color=badge_data[2]
         )
-        self._write(title.replace(" ", "_"), data)
+
+        badgefile = self.get_badgefile(title)
+        self._absbadge.replace_badge(badgefile, *badge_data)
+        self._write(badgefile, data)
 
     def issue_badge(self, title: str, value: Optional[int], thresholds: dict):
         """
@@ -952,17 +1043,14 @@ class Badge:
             thresholds: The threshold dictionary to use for assigning colors.
         """
         import pybadges
-        nissues = str(value)
-        color = "red"
-
-        if value is not None:
-            color = self._getThresholdColorLTE(thresholds, value)
-        else:
-            nissues = "Unknown"
+        badge_data = self.get_issue_badge_data(title, value, thresholds)
 
         data = pybadges.badge(
-            left_text=title, right_text=f"{nissues}", right_color=color)
-        self._write(title.replace(" ", "_"), data)
+            left_text=badge_data[0], right_text=badge_data[1], right_color=badge_data[2]
+        )
+        badgefile = self.get_badgefile(title)
+        self._absbadge.replace_badge(badgefile, *badge_data)
+        self._write(badgefile, data)
 
     def passfail_badge(self, name: str, passing: bool):
         """
@@ -976,10 +1064,26 @@ class Badge:
             passing: True, if the badge shall indicate passage. False, otherwise.
         """
         import pybadges
-        text = "passing" if passing else "failing"
-        color = "brightgreen" if passing else "red"
-        data = pybadges.badge(left_text=name, right_text=text, right_color=color)
-        self._write(name.replace(" ", "_"), data)
+        badge_data = self.get_passfail_badge_data(name, passing)
+        data = pybadges.badge(
+            left_text=badge_data[0], right_text=badge_data[1], right_color=badge_data[2]
+        )
+        badgefile = self.get_badgefile(name)
+        self._absbadge.replace_badge(badgefile, *badge_data)
+        self._write(badgefile, data)
+
+    def write_relative_readme(self):
+        self._absbadge.write_relative_readme()
+
+    def write_absolute_readme(self):
+        self._absbadge.write_absolute_readme()
+
+
+
+
+        
+
+    
 
 
 class CalVersion:
@@ -2600,10 +2704,9 @@ class Manager:
 
         self.remove(quiet)
         self.report(quiet)
-        if not quiet:
-            print("Building wheels...")
-        self._build.run()
 
+        # For including the result in the build, assume that build was successful.
+        # Otherwise, it will not be included in a non-existing (failed) build anyway.
         self._badge.passfail_badge("build", True)
         self._badge.coverage_badge(
             "test coverage",
@@ -2622,7 +2725,13 @@ class Manager:
             self._settings.SECURITY_ISSUES_THRESHOLDS,
         )
         self._badge.passfail_badge("test", self._test.ispassed())
+        self._badge.write_absolute_readme()
+
+        if not quiet:
+            print("Building wheels...")
+        self._build.run()
         self._badge.passfail_badge("build", self._build.ispassed())
+        self._badge.write_relative_readme()
 
         if not quiet:
             print("Update documentation...")
