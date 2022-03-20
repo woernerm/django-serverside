@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Django-Serverside &#8212; django-serverside 22.3.8 documentation</title>
+    <title>Django-Serverside &#8212; django-serverside 22.3.9 documentation</title>
     
     <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -133,8 +133,28 @@
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#prerequisites">
+     Prerequisites
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
     <a class="reference internal nav-link" href="#installation">
      Installation
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#documentation">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#running-tests">
+     Running Tests
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#building-wheels">
+     Building Wheels
     </a>
    </li>
   </ul>
@@ -180,20 +200,81 @@
 <img alt="doc coverage" src="_images/doc_coverage.svg" />
 <img alt="vulnerabilities" src="_images/vulnerabilities.svg" />
 <a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
-<p>This is an app for <a class="reference external" href="https://www.djangoproject.com/">Django</a> that allows you to create
-database users directly from Django’s admin interface. This is useful for data science
-applications. For example, allowing privileged users to query data using analysis tools
-like <span class="xref myst">Matlab</span> or
-<a class="reference external" href="https://www.microsoft.com/de-de/microsoft-365/excel">Excel</a>. They can then use SQL for
-advanced database queries for scientific analysis.</p>
+<p>This is a <a class="reference external" href="https://www.djangoproject.com/">Django</a> app that allows you to create
+database users directly from the Django admin interface. This is useful for data science
+applications. For example, you can allow privileged users to make advanced SQL queries
+from tools like <span class="xref myst">Matlab</span>,
+<a class="reference external" href="https://www.microsoft.com/de-de/microsoft-365/excel">Excel</a>,
+<a class="reference external" href="https://www.python.org/">Python</a>, <a class="reference external" href="https://www.r-project.org/">R</a> and others.<br />
+<br />
+Note that creating database users from an application requires the application to have
+the privilege to create new database users. This may pose an unacceptable vulnerability
+to your database. For example, an attacker may exploit a bug in your application
+with which the attacker acquires the privileges to do anything with your database.
+Therefore, you should only use this app for django projects that are isolated from the
+public and operate in an environment with trusted users.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Django-Serverside currently only works with <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>.</p>
+</section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The project is an early development phase. It is not yet available in the
-<a class="reference external" href="https://pypi.org/">Python Package Index</a>. However, you can install it from github
-using:</p>
+<p>You may install Django-Serverside in your python environment using pip as follows:</p>
 <div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>python -m pip install git+https://github.com/woernerm/django-serverside.git
 </pre></div>
 </div>
+<p>Then, add serverside to the list of installed applications in the settings file of your
+Django project like so:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;serverside&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.admin&quot;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally, replace your default user model as described in the
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#substituting-a-custom-user-model">Django documentation</a>
+by adding the following line to your settings file:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s2">&quot;serverside.User&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>To view the developer documentation, clone the repository to your local machine and open
+docs/html/index.html.</p>
+</section>
+<section id="running-tests">
+<h2>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
+<p>You may run the tests shipped with Django-Serverside yourself by editing the
+tests/settings.py file and providing your own database credentials. The default
+connection settings are:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.postgresql&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;HOST&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PASSWORD&quot;</span><span class="p">:</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;serverside_db&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;USER&quot;</span><span class="p">:</span> <span class="s2">&quot;test_user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TEST&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;test_database&quot;</span><span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>From the root folder of this repository run:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">runtests</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</section>
+<section id="building-wheels">
+<h2>Building Wheels<a class="headerlink" href="#building-wheels" title="Permalink to this headline">¶</a></h2>
+<p>You may build your own wheel files and documentation by running the following command:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">package</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>Since this command will run tests before initiating the actual build, make sure you
+have configured your local test database correctly according to the
+<a class="reference external" href="#running-tests">Running Tests</a> section.</p>
 <br />
 </section>
 </section>

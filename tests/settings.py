@@ -27,11 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# The name of the django project.
-PROJECT_NAME = "Genie"
-
 AUTH_USER_MODEL = "serverside.User"
-
 
 # Application definition
 
@@ -81,9 +77,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": "localhost",
-        "PASSWORD": "yLC!VdZ^sB#n?2PX",
+        "PASSWORD": "12345",
         "NAME": "serverside_db",
-        "USER": "serverside",
+        "USER": "test_user",
         "TEST": {"NAME": "test_database"},
     }
 }
