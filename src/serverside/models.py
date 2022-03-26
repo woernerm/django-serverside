@@ -117,8 +117,23 @@ class User(AbstractUser):
         if not self._backend.user_exists(self._dbusername):
             self._backend.create_user(self._dbusername)
 
+        self.update_db_permissions()
+
+    def update_db_permissions(self):
+        """
+        Grants / Revokes permissions in the database.
+
+        This method is called both in User.save() as well as ModelAdmin.save_related().
+        If the admin interface is used, permissions are set after User.save() has been
+        called. Likewise, if the User model is used in isolation, permissions might
+        already be available in User.save(). Therefore, granting / revoking
+        permissions is done using this method in both of the above mentioned methods.
+        """
+        from django.contrib.auth.models import Permission
+
         models = utils.get_all_models(True, False)
         privileges = self._backend.get_privileges()
+        codenames = Permission.objects.all().values_list("codename", flat=True)
 
         # Requesting new instance of the user, because permissions are cached as
         # outlined here:
@@ -129,9 +144,15 @@ class User(AbstractUser):
                 codename = utils.get_permission_codename(priv, m)
                 perm_name = f"{m._meta.app_label}.{codename}"
                 table = m._meta.db_table
-                # Granting privilege in database.
+
+                if codename not in codenames:
+                    continue  # Permission does not exist.
+
+                # Granting / revoking privilege in database.
                 if tmpuser.has_perm(perm_name):
                     self._backend.grant(self._dbusername, priv, "table", table)
+                else:
+                    self._backend.revoke(self._dbusername, priv, "table", table)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

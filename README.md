@@ -2,7 +2,6 @@
 ![build](data/badges/build.svg)
 ![test](data/badges/test.svg)
 ![coverage](data/badges/test_coverage.svg)
-![doc coverage](data/badges/doc_coverage.svg)
 ![vulnerabilities](data/badges/vulnerabilities.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 

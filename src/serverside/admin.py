@@ -23,5 +23,16 @@ class UserAdmin(BaseUserAdmin):
                 )
                 break
 
+    def save_related(self, request, form, formsets, change):
+        """
+        Update database permissions
+
+        Overwriting this method is necessary since the current permissions are not
+        available in the model's save method, because m2m fields are set in
+        ModelAdmin.save_related() afterwards.
+        """
+        super().save_related(request, form, formsets, change)
+        form.instance.update_db_permissions()
+
 
 admin.site.register(User, UserAdmin)

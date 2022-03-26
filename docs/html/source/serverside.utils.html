@@ -6,28 +6,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>serverside.utils &#8212; django-serverside 22.3.52 documentation</title>
+    <title>serverside.utils &#8212; django-serverside 22.3.60 documentation</title>
     
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -42,7 +39,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -234,11 +231,11 @@
               <div>
                 
   <section id="module-serverside.utils">
-<span id="serverside-utils"></span><h1>serverside.utils<a class="headerlink" href="#module-serverside.utils" title="Permalink to this headline">¶</a></h1>
+<span id="serverside-utils"></span><h1>serverside.utils<a class="headerlink" href="#module-serverside.utils" title="Permalink to this headline">#</a></h1>
 <p>This module defines utility functions used in various places of the package.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="serverside.utils.get_all_models">
-<span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_all_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_auto_created</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_swapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">django.db.models.base.Model</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#serverside.utils.get_all_models" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_all_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_auto_created</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_swapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">django.db.models.base.Model</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#serverside.utils.get_all_models" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns all models of all installed django apps.</p>
 <p>In contrast to get_models() method of django’s AppConfig class, this function
 returns the models of all installed apps.</p>
@@ -260,7 +257,7 @@ True to include them. False, otherwise.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="serverside.utils.get_permission_codename">
-<span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_permission_codename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">privilege</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">django.db.models.base.Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#serverside.utils.get_permission_codename" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">serverside.utils.</span></span><span class="sig-name descname"><span class="pre">get_permission_codename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">privilege</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">django.db.models.base.Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#serverside.utils.get_permission_codename" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a standardized permission codename.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -298,8 +295,9 @@ True to include them. False, otherwise.</p></li>
       </div>
     </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">

@@ -57,7 +57,10 @@ class Settings:
     BASE_DIR = Path(__file__).parents[0]
 
     # Directory where the package source code can be found.
-    SRC_DIR = BASE_DIR / "serverside"
+    SRC_DIR = BASE_DIR / "src"
+
+    # Patterns to omit for coverage.
+    COVERAGE_OMIT_PATTERN = "*/tests/*"
 
     # Directory for placing all reports.
     REPORT_DIR = BASE_DIR / "report"
@@ -117,6 +120,9 @@ class Settings:
 
     # Directory in which build artifacts are placed.
     DISTRIBUTABLE_DIR = BASE_DIR / "dist"
+
+    # Root directory for documentation.
+    TEST_FOLDER = BASE_DIR / "tests"
 
     # The file that contains package configuration for setuptools.
     CONFIGFILE = BASE_DIR / "setup.cfg"
@@ -219,14 +225,15 @@ def require(requirements: List[Tuple[str, Optional[str]]], install: bool = False
 
     notinstalled = []
     for requirement in requirements:
-        modulename = requirement[0]
-        packagename = modulename if requirement[1] is None else requirement[1]
+        modulename, packagename, options = requirement
+        packagename = modulename if packagename is None else packagename
+        options = [] if options is None else options
 
         try:
             importlib.import_module(modulename)
         except ModuleNotFoundError:
             if install:
-                pyexecute(["pip", "install", packagename])
+                pyexecute(["pip", "install"] + options + [packagename])
                 # Make sure that the running script finds the new module.
                 importlib.invalidate_caches()
             else:
@@ -880,7 +887,16 @@ class AbsBadge:
         with open(self._readmefilename, "r") as file:
             self._readme = file.read()
     
-    def replace_badge(self, badgefile:str, title:str, text:str, color:str):
+    def replace_badge(self, badgefile:str, title:str, text:str, color:str) -> None:
+        """
+        Replaces a reference to badgefile with shields.io link.
+
+        Args:
+            badgefile: The local file of the badge.
+            title: The title of the badge to display.
+            value: The value of the badge to display.        
+        """
+
         link_stem = f"https://img.shields.io/static/v1?label={quote(title)}&message="
         link = link_stem + f"{quote(text)}&color={quote(color)}"
         # Replace address, if shields.io badge is used.
@@ -897,18 +913,21 @@ class AbsBadge:
             self._readme = re.sub(link_regex, f"({link})", self._readme)         
 
     def write_absolute_readme(self):
+        """
+        Replaces the readme file with a version that uses shields.io badges.
+        """
         with open(self._readmefilename, "w") as file:
             file.write(self._readme)
 
     def write_relative_readme(self):
+        """
+        Replaces the readme file with a version that uses local badge files.
+        """
         for badgefile, link_regex in self._rel_abs_map.items():
             self._readme = re.sub(link_regex, f"({badgefile})", self._readme)
 
         with open(self._readmefilename, "w") as file:
             file.write(self._readme)
-
-
-
 
 class Badge:
     """
@@ -994,11 +1013,35 @@ class Badge:
         return str(thresholddict[min(applicable)]) if applicable else "red"
 
     def get_coverage_badge_data(self, title: str, value: float, thresholds: dict):
+        """
+        Returns a tuple with details about the coverage badge to create.
+
+        Args:
+            title: The title of the badge to display.
+            value: The value that shall be displayed in percent.
+            thresholds: Dictionary with keys as thresholds and values as color
+                string for the badge package.
+        
+        Returns: 
+            Tuple consisting of title, message string and color of the badge.        
+        """
         coverage = math.floor(value)
         color = self._getThresholdColorGTE(thresholds, coverage)
         return (title, f"{coverage}%", color)
 
     def get_issue_badge_data(self, title: str, value: Optional[int], thresholds: dict):
+        """
+        Returns a tuple with details about the issue badge to create.
+
+        Args:
+            title: The title of the badge to display.
+            value: The value that shall be displayed.
+            thresholds: Dictionary with keys as thresholds and values as color
+                string for the badge package.
+        
+        Returns: 
+            Tuple consisting of title, message string and color of the badge.        
+        """
         nissues = str(value)
         color = "red"
 
@@ -1010,6 +1053,16 @@ class Badge:
         return (title, str(nissues), color)
 
     def get_passfail_badge_data(self, name: str, passing: bool):
+        """
+        Returns a tuple with details about the pass-fail badge to create.
+
+        Args:
+            title: The title of the badge to display.
+            value: The value that shall be displayed.
+        
+        Returns: 
+            Tuple consisting of title, message string and color of the badge.        
+        """
         text = "passing" if passing else "failing"
         color = "brightgreen" if passing else "red"
         return (name, text, color)
@@ -1073,17 +1126,16 @@ class Badge:
         self._write(badgefile, data)
 
     def write_relative_readme(self):
+        """
+        Replaces the readme file with a version that uses local badge files.
+        """
         self._absbadge.write_relative_readme()
 
     def write_absolute_readme(self):
-        self._absbadge.write_absolute_readme()
-
-
-
-
-        
-
-    
+        """
+        Replaces the readme file with a version that uses shields.io badges.
+        """
+        self._absbadge.write_absolute_readme()    
 
 
 class CalVersion:
@@ -1917,6 +1969,7 @@ class Test:
                     "run",
                     "-m",
                     f"--source={srcdir}",
+                    f"--omit={self._settings.COVERAGE_OMIT_PATTERN}",
                     "runtests"
                 ]
             )
@@ -2502,22 +2555,22 @@ class Manager:
 
     CMD_CHOICES = ["build", "report", "doc", "remove"]
     REQUIREMENTS = [
-        ("jinja2", None),
-        ("pybadges", None),
-        ("dateutil", "python-dateutil"),
-        ("sphinx", None),
-        ("pydata_sphinx_theme", None),
-        ("myst_parser", "myst_parser[linkify]"),
-        ("black", None),
-        ("isort", None),
-        ("flake8", None),
-        ("flake8_json_reporter", "flake8-json"),
-        ("safety", None),
-        ("bandit", None),
-        ("coverage", None),
-        ("build", None),
-        ("mypy", None),
-        ("defusedxml", None),
+        ("jinja2", None, None),
+        ("pybadges", None, None),
+        ("dateutil", "python-dateutil", None),
+        ("sphinx", None, None),
+        ("pydata_sphinx_theme", None, None),
+        ("myst_parser", "myst_parser[linkify]", None),
+        ("black", None, None),
+        ("isort", None, None),
+        ("flake8", None, None),
+        ("flake8_json_reporter", "flake8-json", None),
+        ("safety", None, None),
+        ("bandit", None, None),
+        ("coverage", None, None),
+        ("build", None, None),
+        ("mypy", None, None),
+        ("defusedxml", None, None),
     ]
 
     def __init__(self, settings: Settings) -> None:
@@ -2609,8 +2662,8 @@ class Manager:
         # it once if safety is also not yet installed. If it fails, do not try to
         # install it again to avoid repetitive questions although everything is
         # working. 
-        if platform.system() == "Windows" and require([("safety", None)], False):
-            requirements += [("python-certify-win32", None)]
+        if platform.system() == "Windows" and require([("safety", None, None)], False):
+            requirements += [("python-certify-win32", None, ["-q", "-q"])]
 
         notinstalled = require(requirements, False)
 
