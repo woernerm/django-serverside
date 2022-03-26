@@ -25,7 +25,7 @@ Django-Serverside currently only works with [PostgreSQL](https://www.postgresql.
 ## Installation
 You may install Django-Serverside in your python environment using pip as follows:
 ```Shell
-python -m pip install git+https://github.com/woernerm/django-serverside.git
+python -m pip install django-serverside
 ```
 Then, add serverside to the list of installed applications in the settings file of your
 Django project like so:
