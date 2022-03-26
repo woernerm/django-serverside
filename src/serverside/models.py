@@ -43,8 +43,8 @@ class User(AbstractUser):
     has_dbuser = BooleanField(
         verbose_name="Database access",
         help_text="Designates whether this user can access the database "
-        "directly using SQL. A password change is required before the "
-        "database can be accessed.",
+        "directly using SQL. The user is required to perform a password change "
+        "before the database can be accessed.",
         default=False,
     )
 
