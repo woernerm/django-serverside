@@ -133,7 +133,29 @@ class TestPermissions(TestCase):
             has_perm = user.has_perm(perm_name)
             self.assertFalse(has_perm)
             self.assertFalse(table in granted_tables)
-        
+
+    def test_update_db_permissions_shall_return_without_action_if_there_is_no_db_user(self):
+        cursor = connection.cursor()
+        models = utils.get_all_models(True, False)
+        name = "John Doe"
+        password = "12345"
+        privilege = "select"
+
+        user = User.objects.create(username=name, password=password, has_dbuser=False)
+        # Is there a new user in the database?
+        query = sql.SQL("SELECT FROM pg_roles WHERE rolname = %s")
+        cursor.execute(query, (name,))
+        self.assertIsNone(cursor.fetchone())
+
+        # Is there a new user in django (exactly one).
+        self.assertEqual(User.objects.filter(username=name).count(), 1)
+
+        for m in models:
+            codename = utils.get_permission_codename(privilege.lower(), m)
+            permission = Permission.objects.filter(codename=codename).first()
+            user.user_permissions.add(permission)
+        user.save()
+        user.update_db_permissions()
 
 
 

@@ -282,3 +282,5 @@ class TestUser(TestCase):
         num_users_after_deletion = len(cursor.fetchall())
 
         self.assertEqual(num_users_after_deletion, num_users_prior)
+
+    

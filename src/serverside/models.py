@@ -131,6 +131,13 @@ class User(AbstractUser):
         """
         from django.contrib.auth.models import Permission
 
+        if (
+            not self.has_dbuser
+            or not self.__user_table_exists()
+            or not self._backend.user_exists(self._dbusername)
+        ):
+            return  # Nothing to do. No database user exists.
+
         models = utils.get_all_models(True, False)
         privileges = self._backend.get_privileges()
         codenames = Permission.objects.all().values_list("codename", flat=True)
