@@ -5,7 +5,7 @@ This module defines functions that are called on a django signal such as post_mi
 from serverside import utils
 
 
-def create_permissions(*args, **kwargs):
+def create_permissions_and_grant_privileges(*args, **kwargs):
     """
     Creates database permissions to assign to a user.
 
@@ -19,6 +19,8 @@ def create_permissions(*args, **kwargs):
     """
     from django.contrib.auth.models import Permission
     from django.contrib.contenttypes.models import ContentType
+
+    from serverside.models import User
 
     # Workaround for a decade-old bug in django:
     # See here: https://code.djangoproject.com/ticket/10827#no1 and
@@ -34,3 +36,8 @@ def create_permissions(*args, **kwargs):
         Permission.objects.update_or_create(
             codename=codename, defaults={"name": name, "content_type": content_type}
         )
+
+    # Grant privileges that existing users already have.
+    users = User.objects.all()
+    for user in users:
+        user.update_db_permissions()

@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/4.0/ref/applications/
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from .signals import create_permissions
+from .signals import create_permissions_and_grant_privileges
 
 
 class ServersideConfig(AppConfig):
@@ -21,4 +21,4 @@ class ServersideConfig(AppConfig):
     verbose_name = "ServerSide"
 
     def ready(self):
-        post_migrate.connect(create_permissions)
+        post_migrate.connect(create_permissions_and_grant_privileges)
